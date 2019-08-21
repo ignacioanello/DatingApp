@@ -11,8 +11,10 @@
     <div *ngIf="registerMode" class="container">
       <div class="row justify-content-center">
         <div class="col-4">
-          <!-- Para parar valores a un Child Component se usan [] -->
-          <app-register [valuesFromHome]="values"></app-register>
+          <!-- Para pasar valores a un Child Component se usan [], para tomar valores salientes de un Child hacia un Parent es () -->
+          <!-- cancelRegisterMode es el metodo en Home Component qe se encarga de tomar el evento qie emite el child ($event) -->
+          <!-- app-register [valuesFromHome]="values" (cancelRegister)="cancelRegisterMode($event)"></app-register> -->
+          <app-register (cancelRegister)="cancelRegisterMode($event)"></app-register>
         </div>
       </div>
     </div>

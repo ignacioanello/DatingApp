@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
+import { AlertifyService } from '../_services/alertify.service';
+import { NgForOf } from '@angular/common';
 
 @Component({
   selector: 'app-nav',
@@ -9,7 +11,7 @@ import { AuthService } from '../_services/auth.service';
 export class NavComponent implements OnInit {
   model: any = {};
 
-  constructor(private authService: AuthService) { }
+  constructor(public authService: AuthService, private alertify: AlertifyService) { }
 
   ngOnInit() {
   }
@@ -19,24 +21,24 @@ export class NavComponent implements OnInit {
     //Siempre hay que suscribirse a un Observable.
     this.authService.login(this.model).subscribe(
       response => {
-        console.log('Logged in successfully!!');
+        this.alertify.success('Logged in successfully!!');
         console.log(localStorage.getItem('token'));
       },
       error => {
-        return console.log('Failed to login: ', { error });
+        this.alertify.error('Failed to login');
+        // return console.log('Failed to login: ', { error });
       }
     );
   }
 
   loggedIn() {
-    const token = localStorage.getItem('token');
-    return !!token; // Retorna true o false
+    return this.authService.loggedIn();
   }
 
   logout() {
     localStorage.removeItem('token');
     console.log('token: ' + localStorage.getItem('token'));
-    console.log('Logged Out!');
+    this.alertify.message('Logged Out!');
   }
 }
 

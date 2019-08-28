@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 // tslint:disable-next-line: comment-format
 //providedIn: 'root' quiere decir que este servicio esta provisto a nivel de root, o sea de app.Module
@@ -10,8 +11,10 @@ import { map } from 'rxjs/operators';
 })
 export class AuthService {
   baseUrl = 'http://localhost:5000/api/auth/';
+  jwtHelper = new JwtHelperService();
+  decodedToken: any;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(model: any) {
     return this.http.post(this.baseUrl + 'login', model)
@@ -21,6 +24,12 @@ export class AuthService {
 
           if (user) {
             localStorage.setItem('token', user.token);
+
+            // Decodifico el Token para poder llerlo en el HTML (Welcome {{ authService.decodedToken?.unique_name }})
+            this.decodedToken = this.jwtHelper.decodeToken(user.token);
+            localStorage.setItem('decodedToken', JSON.stringify(this.decodedToken));
+
+            console.log(this.decodedToken);
           }
         })
       );
@@ -28,5 +37,10 @@ export class AuthService {
 
   register(model: any) {
     return this.http.post(this.baseUrl + 'register', model);
+  }
+
+  loggedIn() {
+    const token = localStorage.getItem('token');
+    return !this.jwtHelper.isTokenExpired(token);
   }
 }

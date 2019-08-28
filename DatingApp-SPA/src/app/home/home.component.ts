@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   }
 
   cancelRegisterMode(registerMode: boolean) {
-    // El boolean (false) viende directamente del child mediante el eventEmmiter
+    // El boolean (false) viende directamente del child mediante el eventEmmiter (emit())
     this.registerMode = registerMode;
   }
 }

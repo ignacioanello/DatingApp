@@ -45,27 +45,27 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDTO userForLoginDTO)
         {
-            //No hago validaciones dentro del DTO ([Required], etc), esa validacion ya la hace el metodo Login()
+            // No hago validaciones dentro del DTO ([Required], etc), esa validacion ya la hace el metodo _repo.Login()
             var userFromRepo = await _repo.Login(userForLoginDTO.UserName.ToLower(), userForLoginDTO.Password);
 
             if (userFromRepo == null)
                 return Unauthorized();
 
-            //1- Creo esto en el payload para que cuando el usuario mande el token de nuevo yo pueda tener esta info y no ir a la DB
+            // 1- Creo esto en el payload para que cuando el usuario mande el token de nuevo yo pueda tener esta info y no ir a la DB
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
                 new Claim(ClaimTypes.Name, userFromRepo.UserName)
             };
 
-            //2- Esta es la generacion de la key que voy a usar para desencriptar cada vez que envio o recibo el toquen 
-            //y poder asi leer el payload
+            // 2- Esta es la generacion de la key que voy a usar para desencriptar cada vez que envio o recibo el token 
+            // y poder asi leer el payload
             // En otras palabras el server necesita firmar el token con la Key que le damos.
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
-            //3- Se crea la firma digital con la Key a usar y el algoritmo.
+            // 3- Se crea la firma digital con la Key a usar y el algoritmo.
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            //4- Contiene la informacion y data para crear el token de seguridad
+            // 4- Contiene la informacion y data para crear el token de seguridad
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -73,7 +73,7 @@ namespace DatingApp.API.Controllers
                 SigningCredentials = credentials
             };
 
-            //Con esto puedo crar un token y pasarle el TokenDescriptor
+            // Con esto puedo crar un token y pasarle el TokenDescriptor
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 

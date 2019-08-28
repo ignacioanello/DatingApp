@@ -25,15 +25,15 @@ namespace DatingApp.API.Data
             return user;
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        private bool VerifyPasswordHash(string password, byte[] DBpasswordHash, byte[] DBpasswordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(DBpasswordSalt))
             {
                 //Aca genero el hash, de nuevo, con el salt que tenia el usuario (passwordSalt) en la DB, a ver si da lo mismo
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                for (int i = 0; i < computedHash.Length; i++)
+                var actualComputedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < actualComputedHash.Length; i++)
                 {
-                    if(computedHash[i] != passwordHash[i])
+                    if(actualComputedHash[i] != DBpasswordHash[i])
                         return false;
                 }
                 return true;
@@ -61,7 +61,7 @@ namespace DatingApp.API.Data
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
                 passwordSalt = hmac.Key;
-                //Con esa key genera el hash.
+                //Con esa key genera el hash (pasandole el password a hashear).
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }

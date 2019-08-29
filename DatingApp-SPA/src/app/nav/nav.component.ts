@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
 import { NgForOf } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -11,7 +12,9 @@ import { NgForOf } from '@angular/common';
 export class NavComponent implements OnInit {
   model: any = {};
 
-  constructor(public authService: AuthService, private alertify: AlertifyService) { }
+  constructor(public authService: AuthService,
+              private alertify: AlertifyService,
+              private route: Router) { }
 
   ngOnInit() {
   }
@@ -27,7 +30,8 @@ export class NavComponent implements OnInit {
       error => {
         this.alertify.error('Failed to login');
         // return console.log('Failed to login: ', { error });
-      }
+      },
+      () => this.route.navigate(['/members'])
     );
   }
 
@@ -38,6 +42,7 @@ export class NavComponent implements OnInit {
   logout() {
     localStorage.removeItem('token');
     console.log('token: ' + localStorage.getItem('token'));
+    this.route.navigate(['/home']);
     this.alertify.message('Logged Out!');
   }
 }

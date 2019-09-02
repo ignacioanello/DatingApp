@@ -51,6 +51,8 @@ namespace DatingApp.API.Controllers
             if (userFromRepo == null)
                 return Unauthorized();
 
+
+            // CREACION DE TOKEN
             // 1- Creo esto en el payload para que cuando el usuario mande el token de nuevo yo pueda tener esta info y no ir a la DB
             var claims = new[]
             {
